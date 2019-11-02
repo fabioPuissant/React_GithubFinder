@@ -1,5 +1,4 @@
-import { CreateContext } from 'react';
-import { createContext } from 'istanbul-lib-report';
+import { createContext } from 'react';
 
 const githubContext = createContext();
 
