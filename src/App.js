@@ -1,21 +1,18 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import Navbar from './components/layout/Navbar';
 import './App.css';
 import Users from './components/users/Users';
 import User from './components/users/User';
-import axios from 'axios';
+
 import Search from './components/users/Search';
 import Alert from './components/layout/Alert';
 import About from './components/pages/About';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-const App = () => {
-  const [users, setUsers] = useState([]);
-  const [user, setUser] = useState({});
-  const [repos, setRepos] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState(null);
+import GithubState from './context/github/GithubState';
+import AlertState from './context/alert/AlertState';
 
+const App = () => {
   // Fetch all users from GitHub API.
   // async componentDidMount() {
   //   this.setState({ loading: true });
@@ -26,81 +23,33 @@ const App = () => {
   //   this.setState({ users: resp.data, loading: false });
   // }
 
-  // Search GitHub users.
-
-  //Clear Users
-  const clearUsers = () => {
-    setUsers([]);
-    setLoading(false);
-  };
-
-  // Alert when nothing inputed
-  const showAlert = (msg, type) => {
-    this.setState({ alert: { msg, type } });
-    setTimeout(() => setAlert(null), 4000);
-    setAlert({ msg, type });
-  };
-
-  // Get single GitHub user
-  const getUser = async username => {
-    setLoading(true);
-    const resp = await axios.get(
-      `https://api.github.com/users/${username}?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-    );
-    setUser(resp.data);
-    setLoading(false);
-  };
-
-  // Get user repos
-  const getUserRepos = async username => {
-    setLoading(true);
-    const resp = await axios.get(
-      `https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-    );
-    setRepos(resp.data);
-    setLoading(false);
-  };
-
   return (
-    <Router>
-      <div className='App'>
-        <Navbar />
-        <div className='container'>
-          <Alert alert={alert} />
-          <Switch>
-            <Route
-              exact
-              path='/'
-              render={props => (
-                <Fragment>
-                  <Search
-                    clearUsers={clearUsers}
-                    showClear={users.length > 0 ? true : false}
-                    setAlert={showAlert}
-                  />
-                  <Users loading={loading} users={users} />
-                </Fragment>
-              )}
-            />
-            <Route exact path='/about' component={About} />
-            <Route
-              exact
-              path='/user/:login'
-              render={props => (
-                <User
-                  {...props}
-                  getUser={getUser}
-                  user={user}
-                  loading={loading}
-                  getUserRepos={getUserRepos}
-                  repos={repos}
+    <GithubState>
+      <AlertState>
+        <Router>
+          <div className='App'>
+            <Navbar />
+            <div className='container'>
+              <Alert alert={alert} />
+              <Switch>
+                <Route
+                  exact
+                  path='/'
+                  render={props => (
+                    <Fragment>
+                      <Search />
+                      <Users />
+                    </Fragment>
+                  )}
                 />
-              )}
-            />
-          </Switch>
-        </div>
-      </div>
-    </Router>
+                <Route exact path='/about' component={About} />
+                <Route exact path='/user/:login' component={User} />
+              </Switch>
+            </div>
+          </div>
+        </Router>
+      </AlertState>
+    </GithubState>
   );
 };
 

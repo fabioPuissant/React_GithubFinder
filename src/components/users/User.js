@@ -1,10 +1,13 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useContext } from 'react';
 import Spinner from '../layout/Spinner';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import Repos from '../repos/Repos';
+import GithubContext from '../../context/github/githubContext';
 
-const User = ({ loading, repos, user, match, getUser, getUserRepos }) => {
+const User = ({ match }) => {
+  const githubContext = useContext(GithubContext);
+  const { getUser, loading, user, repos, getUserRepos } = githubContext;
   // Get param from url
   // Empty brackets stop looping, does one update
   useEffect(() => {
@@ -28,6 +31,7 @@ const User = ({ loading, repos, user, match, getUser, getUserRepos }) => {
     public_gists,
     hireable
   } = user;
+
   if (loading) {
     return <Spinner />;
   }
@@ -101,9 +105,6 @@ const User = ({ loading, repos, user, match, getUser, getUserRepos }) => {
 };
 
 User.propTypes = {
-  loading: PropTypes.bool,
-  user: PropTypes.object.isRequired,
-  getUser: PropTypes.func.isRequired,
   getUserRepos: PropTypes.func.isRequired,
   repos: PropTypes.array.isRequired
 };
