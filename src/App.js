@@ -27,14 +27,6 @@ const App = () => {
   // }
 
   // Search GitHub users.
-  const searchUsers = async text => {
-    setLoading(true);
-    const resp = await axios.get(
-      `https://api.github.com/search/users?q=${text}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-    );
-    setUsers(resp.data.items);
-    setLoading(false);
-  };
 
   //Clear Users
   const clearUsers = () => {
@@ -82,7 +74,6 @@ const App = () => {
               render={props => (
                 <Fragment>
                   <Search
-                    searchUsers={searchUsers}
                     clearUsers={clearUsers}
                     showClear={users.length > 0 ? true : false}
                     setAlert={showAlert}
